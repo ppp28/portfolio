@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photographer Portfolio</title>
+    
+    <!-- フォント: 高級感とエッジを兼ね備えた「Syne」と「Inter」 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 変数定義 --- */
+        :root {
+            --bg-color: #050505; /* ほぼ漆黒 */
+            --text-color: #f0f0f0;
+            --dim-color: #444;
+            --accent-color: #ffffff;
+            --font-head: 'Syne', sans-serif; /* 個性的な見出しフォント */
+            --font-body: 'Inter', sans-serif;
+        }
+
+        /* --- リセット & 基本設定 --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* デフォルトカーソルを消去 */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- カスタムカーソル --- */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: white;
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        /* ホバー時のカーソル変化 */
+        body.hovered .cursor-outline {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: transparent;
+            backdrop-filter: blur(2px);
+        }
+
+        /* --- レイアウト --- */
+        .container {
+            padding: 0 5%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* ヘッダー */
+        header {
+            height: 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            padding: 0 5%;
+            z-index: 100;
+            mix-blend-mode: difference; /* 背景が白くなっても見えるように */
+        }
+
+        .brand {
+            font-family: var(--font-head);
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+
+        .status {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status::before {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            background-color: #0f0;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #0f0;
+        }
+
+        /* ヒーローセクション */
+        .hero {
+            height: 40vh;
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 50px;
+        }
+
+        .hero-text h1 {
+            font-family: 'Oswald', sans-serif; 
+            font-style: italic; 
+            font-size: clamp(2.5rem, 8vw, 6.5rem);
+            letter-spacing: -0.02em;
+            line-height: 0.9;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .hero-text p {
+            margin-top: 30px;
+            max-width: 500px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* 作品リストエリア */
+        .portfolio-section {
+            padding: 100px 0 200px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 40px;
+            letter-spacing: 0.1em;
+            border-bottom: 1px solid #222;
+            padding-bottom: 20px;
+        }
+
+        .album-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .album-item {
+            position: relative;
+            border-bottom: 1px solid #222;
+        }
+
+        .album-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 50px 0;
+            transition: padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .album-name {
+            font-family: var(--font-head);
+            font-size: clamp(2rem, 6vw, 5rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #666;
+            transition: color 0.4s, transform 0.4s;
+        }
+
+        .album-meta {
+            font-size: 0.9rem;
+            color: #444;
+        }
+
+        /* リストホバー時のスタイル */
+        .album-item:hover .album-link {
+            padding-left: 20px; /* 少し右に動く */
+        }
+
+        .album-item:hover .album-name {
+            color: #fff;
+        }
+
+        /* --- ホバー追従画像 (フローティング・イメージ) --- */
+        .hover-image-wrapper {
+            position: fixed;
+            top: 0; left: 0;
+            width: 350px; /* 写真のサイズ */
+            height: 450px;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .hover-image-wrapper.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* フッター */
+        footer {
+            border-top: 1px solid #222;
+            padding: 80px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .footer-contact {
+            font-family: var(--font-head);
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            * { cursor: auto !important; } /* モバイルはカーソル戻す */
+            .cursor-dot, .cursor-outline, .hover-image-wrapper { display: none; } /* カーソルとホバー画像消す */
+            
+            .hero-text h1 { font-size: 3.5rem; }
+            .album-link { padding: 30px 0; }
+            .album-name { font-size: 2rem; color: #fff; } /* 最初から白く */
+            .album-item:hover .album-link { padding-left: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- カーソル要素 -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- ホバー時に浮き出る画像エリア -->
+    <div class="hover-image-wrapper">
+        <img src="" id="preview-img" alt="Portfolio Preview">
+    </div>
+
+    <div class="container">
+        <header>
+            <a href="#" class="brand">Hina Nagai</a>
+            <div class="status">Available for Work</div>
+        </header>
+
+        <main>
+            <!-- ヒーローエリア -->
+            <section class="hero">
+                <div class="hero-text">
+                    <h1>Photographer and<br>Production</h1>
+                    <p>Based in Tokyo</p>
+                </div>
+            </section>
+
+            <!-- 作品リスト -->
+            <section class="portfolio-section">
+                <div class="section-title">Collections</div>
+                
+                <ul class="album-list">
+                    <!-- 
+                        data-img にそのカテゴリーの代表的な写真のURLを入れてください。
+                    -->
+                    <li class="album-item">
+                        <a href="#" class="album-link" data-img="images/photo01.jpg">
+                            <span class="album-name">Fashion</span>
+                            <span class="album-meta"></span>
+                        </a>
+                    </li>
+
+                    <li class="album-item">
+                        <a href="#" class="album-link" data-img="images/photo017.jpg">
+                            <span class="album-name">Music</span>
+                            <span class="album-meta"></span>
+                        </a>
+                    </li>
+
+                    <li class="album-item">
+                        <a href="#" class="album-link" data-img="images/photo012.jpg">
+                            <span class="album-name">Production</span>
+                            <span class="album-meta"></span>
+                        </a>
+                    </li>
+
+                    <li class="album-item">
+                        <a href="#" class="album-link" data-img="images/photo07.jpg">
+                            <span class="album-name">Personal Project</span>
+                            <span class="album-meta"></span>
+                        </a>
+                    </li>
+
+                   
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-contact">
+                <a href="mailto:hello@example.com">Get in Touch</a>
+            </div>
+            <div class="footer-socials">
+                <a href="#">Instagram</a>
+                <a href="#">Twitter</a>
+                <a href="#">Behance</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // --- JavaScriptによる動きの制御 ---
+
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        const hoverWrapper = document.querySelector('.hover-image-wrapper');
+        const previewImg = document.getElementById('preview-img');
+        const links = document.querySelectorAll('.album-link');
+
+        // 1. カーソル追従アニメーション
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            // ドットは遅延なしで追従
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            // アウトラインは少し遅れて滑らかに追従
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+
+            // ホバー画像の位置調整（カーソルの少し右下に配置）
+            // 画像の半分のサイズ分オフセットして中心を合わせるか、少しずらす
+            const xOffset = 50; 
+            const yOffset = -225; // 高さの半分上にずらして、Y軸中心を合わせる
+
+            // CSSのtransformで動かすと重いので、animateを使用
+            hoverWrapper.animate({
+                left: `${posX + xOffset}px`,
+                top: `${posY + yOffset}px`
+            }, { duration: 800, fill: "forwards", easing: "cubic-bezier(0.16, 1, 0.3, 1)" });
+        });
+
+        // 2. リンクホバー時の挙動
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                // カーソルを大きくする
+                document.body.classList.add('hovered');
+
+                // 画像URLを取得してセット
+                const imgSrc = link.getAttribute('data-img');
+                previewImg.src = imgSrc;
+
+                // 画像を表示
+                hoverWrapper.classList.add('active');
+            });
+
+            link.addEventListener('mouseleave', () => {
+                // カーソルを戻す
+                document.body.classList.remove('hovered');
+                
+                // 画像を隠す
+                hoverWrapper.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
